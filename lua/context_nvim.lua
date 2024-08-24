@@ -1,5 +1,5 @@
 -- main module file
-local module = require("plugin_name.module")
+local module = require("context_nvim.module")
 
 ---@class Config
 ---@field opt string Your config option
@@ -22,6 +22,10 @@ end
 
 M.hello = function()
   return module.my_first_function(M.config.opt)
+end
+
+for k, v in pairs(module) do
+  M[k] = v
 end
 
 return M

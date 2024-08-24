@@ -33,15 +33,15 @@ Click on `Use this template`
 ```
 .
 ├── lua
-│   ├── plugin_name
+│   ├── context_nvim
 │   │   └── module.lua
-│   └── plugin_name.lua
+│   └── context_nvim.lua
 ├── Makefile
 ├── plugin
-│   └── plugin_name.lua
+│   └── context_nvim.lua
 ├── README.md
 ├── tests
 │   ├── minimal_init.lua
-│   └── plugin_name
-│       └── plugin_name_spec.lua
+│   └── context_nvim
+│       └── context_nvim_spec.lua
 ```
