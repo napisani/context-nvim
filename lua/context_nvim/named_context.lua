@@ -15,7 +15,7 @@ function NamedContext.new(target_size)
   end
 
   function self.save_named_context(name, entry)
-    vim.notify(vim.inspect(entry))
+    -- vim.notify(vim.inspect(entry))
     named_contexts[name] = entry
     table.insert(names, name)
     if #names >= max_size then
@@ -29,6 +29,12 @@ function NamedContext.new(target_size)
   function self.save_and_name_context(entry)
     local name = Utils.get_current_buffer_name()
     return self.save_named_context(name, entry)
+  end
+
+  function self.add_by_filepath(filename)
+    local entry = self.create_context_for_filepath(filename)
+    entry.name = filename
+    self.save_named_context(filename, entry)
   end
 
   function self.add_context(only_if_file)
@@ -50,6 +56,20 @@ function NamedContext.new(target_size)
       name = name,
       content = content,
       selection_type = selection_type,
+      filetype = filetype,
+      filename = filename,
+      ext = ext,
+      is_file = is_file,
+    }
+    return entry
+  end
+
+  function self.create_context_for_filepath(filepath)
+    local filetype, filename, ext, is_file = Utils.get_file_info(filepath)
+    local entry = {
+      name = filename,
+      content = nil,
+      selection_type = "file_path",
       filetype = filetype,
       filename = filename,
       ext = ext,

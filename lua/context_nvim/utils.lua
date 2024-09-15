@@ -52,4 +52,12 @@ function M.get_current_buffer_info()
   return filetype, filename, ext, is_file
 end
 
+function M.get_file_info(filepath)
+  local filetype = vim.filetype.match({ filename = filepath })
+  local filename = vim.fn.fnamemodify(filepath, ":t")
+  local ext = vim.fn.fnamemodify(filepath, ":e")
+  local is_file = vim.fn.filereadable(filepath) == 1
+  return filetype, filename, ext, is_file
+end
+
 return M
