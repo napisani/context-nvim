@@ -2,16 +2,10 @@ local builtin = require("telescope.builtin")
 local actions = require("telescope.actions")
 local context_nvim = require("context_nvim")
 local action_state = require("telescope.actions.state")
-function add_file_picker(opts)
-  opts = opts or {}
-  -- Merge custom attach_mappings with any existing ones
-  local custom_attach_mappings = function(prompt_bufnr, map)
-    -- -- Keep any existing attachments
-    -- if opts.attach_mappings then
-    --   opts.attach_mappings(prompt_bufnr, map)
-    -- end
 
-    -- Add custom action for adding files to context
+local add_file_picker = function(opts)
+  opts = opts or {}
+  local custom_attach_mappings = function(prompt_bufnr, map)
     actions.select_default:replace(function()
       local picker = action_state.get_current_picker(prompt_bufnr)
       local selections = picker:get_multi_selection()
@@ -30,7 +24,6 @@ function add_file_picker(opts)
       end
 
       actions.close(prompt_bufnr)
-      print("Added file(s) to context")
     end)
 
     return true

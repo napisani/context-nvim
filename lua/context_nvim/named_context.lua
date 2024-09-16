@@ -113,6 +113,21 @@ function NamedContext.new(target_size)
     return results
   end
 
+  function self.add_all_from_qflist()
+    local paths = Utils.get_file_paths_from_qflist()
+    for _, path in ipairs(paths) do
+      self.add_by_filepath(path)
+    end
+  end
+
+  function self.add_all_files_in_dir(dir, opts)
+    opts = opts or {}
+    local files = Utils.get_files_in_dir(dir, opts)
+    for _, file in ipairs(files) do
+      self.add_by_filepath(file)
+    end
+  end
+
   return self
 end
 

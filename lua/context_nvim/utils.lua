@@ -1,3 +1,4 @@
+local scan = require("plenary.scandir")
 local M = {}
 
 function M.entry_to_md(entry)
@@ -59,5 +60,40 @@ function M.get_file_info(filepath)
   local is_file = vim.fn.filereadable(filepath) == 1
   return filetype, filename, ext, is_file
 end
+
+function M.get_file_paths_from_qflist()
+  local qf_list = vim.fn.getqflist()
+  local file_paths = {}
+
+  for _, entry in ipairs(qf_list) do
+    local bufnr = entry.bufnr
+    if bufnr > 0 then
+      local file_path = vim.api.nvim_buf_get_name(bufnr)
+      if file_path and file_path ~= "" and not file_paths[file_path] then
+        file_paths[file_path] = true
+      end
+    end
+  end
+
+  local paths = {}
+  for k, _ in pairs(file_paths) do
+    table.insert(paths, k)
+  end
+  return paths
+end
+
+function M.get_files_in_dir(dir, opts)
+  opts = opts or {}
+  local files = {}
+  scan.scan_dir(dir, {
+    hidden = opts.hidden,
+    respect_gitignore = opts.respect_gitignore,
+    on_insert = function(entry)
+      table.insert(files, entry)
+    end,
+  })
+  return files
+end
+
 
 return M

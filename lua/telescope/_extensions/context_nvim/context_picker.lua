@@ -63,17 +63,7 @@ function get_context_picker(context_type)
     pickers
       .new(opts, {
         prompt_title = "AI Contexts",
-
         previewer = custom_previewer,
-        -- previewer = previewers.new_buffer_previewer({
-        --   title = "Named Contexts",
-        --   define_preview = function(self, entry, status)
-        --     -- vim.notify(vim.inspect(entry))
-        --     local lines = vim.split(entry["value"], "\n")
-        --     vim.api.nvim_buf_set_lines(self.state.bufnr, 0, 0, true, lines)
-        --     utils.highlighter(self.state.bufnr, "markdown")
-        --   end,
-        -- }),
         finder = make_finder(),
         sorter = conf.file_sorter(opts),
         attach_mappings = function(prompt_bufnr, map)
@@ -82,7 +72,7 @@ function get_context_picker(context_type)
             local selection = action_state.get_selected_entry()
             if selection ~= nil then
               -- context_nvim.delete_named_context(selection.display)
-              ctx.delete_by_name(selection.display)
+              ctx.delete_named_context(selection.display)
               current_picker:refresh(make_finder(), { reset_prompt = false })
             end
           end)
