@@ -66,6 +66,10 @@ local function build_context_nvim_command(subcommands)
       M.manual_context.add_by_filepath(path)
     elseif subcommand == "add_qflist" then
       M.manual_context.add_all_from_qflist()
+    elseif subcommand == "clear_history" then
+      M.history_context.clear_named_context()
+    elseif subcommand == "clear_manual" then
+      M.manual_context.clear_named_context()
     elseif subcommand == "add_dir" then
       require("telescope").extensions.context_nvim.add_dir()
     elseif subcommand == "add_file" then
@@ -116,7 +120,7 @@ M.setup = function(args)
     telescope.load_extension("context_nvim")
   end
 
-  local subcommands = { "add_current_file", "add_qflist" }
+  local subcommands = { "add_current_file", "add_qflist", "clear_history", "clear_manual" }
 
   if M.config.telescope.enable then
     table.insert(subcommands, "add_dir")
