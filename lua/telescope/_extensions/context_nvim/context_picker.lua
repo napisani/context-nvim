@@ -1,18 +1,15 @@
 local pickers = require("telescope.pickers")
 local finders = require("telescope.finders")
 local conf = require("telescope.config").values
-local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 local previewers = require("telescope.previewers")
-local utils = require("telescope.previewers.utils")
 local make_entry = require("telescope.make_entry")
-local logger = require("plenary.log")
 local context_nvim = require("context_nvim")
 local putils = require("telescope.previewers.utils")
 local action_set = require("telescope.actions.set")
 
 local custom_previewer = previewers.new_buffer_previewer({
-  title = "Custom Previewer",
+  title = "Context Preview",
   get_buffer_by_name = function(_, entry)
     return entry.value
   end,
@@ -69,10 +66,11 @@ function get_context_picker(context_type)
 
         attach_mappings = function(prompt_bufnr, map)
           action_set.select:replace(function()
-            -- vim.notify("select")
+            context_nvim.logger.debug("selecting")
           end)
 
           map("n", "dd", function()
+            context_nvim.logger.debug("deleting")
             local current_picker = action_state.get_current_picker(prompt_bufnr)
             local selection = action_state.get_selected_entry()
             if selection ~= nil then

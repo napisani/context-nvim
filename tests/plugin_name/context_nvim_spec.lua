@@ -25,7 +25,7 @@ describe("NamedContext", function()
       get_file_paths_from_qflist = function()
         return { "file1", "file2" }
       end,
-      get_files_in_dir = function(dir, opts)
+      get_files_in_dir = function(_dir, _opts)
         return { "file1", "file2", "file3" }
       end,
     }

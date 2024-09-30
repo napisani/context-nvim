@@ -2,7 +2,6 @@ local actions = require("telescope.actions")
 local context_nvim = require("context_nvim")
 local action_state = require("telescope.actions.state")
 local scan = require("plenary.scandir")
-local os_sep = package.config:sub(1, 1)
 local pickers = require("telescope.pickers")
 local finders = require("telescope.finders")
 local conf = require("telescope.config").values
