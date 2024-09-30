@@ -1,105 +1,100 @@
-local M = require("context_nvim.module")
+local NamedContext = require("context_nvim.named_context")
+local Utils = require("context_nvim.utils")
 
-describe("context_nvim module", function()
+describe("NamedContext", function()
+  local context
+  local mock_utils
+
+  before_each(function()
+    context = NamedContext.new(3) -- Setting target_size to 3 for testing purposes
+
+    -- Mocking Utils functions
+    mock_utils = {
+      get_current_buffer_name = function()
+        return "buffer_name"
+      end,
+      get_current_selection = function()
+        return "content", "selection_type"
+      end,
+      get_current_buffer_info = function()
+        return "filetype", "filename", "ext", true
+      end,
+      get_file_info = function(filepath)
+        return "filetype", filepath, "ext", true
+      end,
+      get_file_paths_from_qflist = function()
+        return { "file1", "file2" }
+      end,
+      get_files_in_dir = function(dir, opts)
+        return { "file1", "file2", "file3" }
+      end,
+    }
+
+    Utils.get_current_buffer_name = mock_utils.get_current_buffer_name
+    Utils.get_current_selection = mock_utils.get_current_selection
+    Utils.get_current_buffer_info = mock_utils.get_current_buffer_info
+    Utils.get_file_info = mock_utils.get_file_info
+    Utils.get_file_paths_from_qflist = mock_utils.get_file_paths_from_qflist
+    Utils.get_files_in_dir = mock_utils.get_files_in_dir
+  end)
+
   it("should save and retrieve named context", function()
-    local context_name = "test_context"
-    local entry = {
-      name = context_name,
-      content = "sample content",
-      selection_type = "file_path",
-      filetype = "lua",
-      filename = "test.lua",
-      ext = "lua",
-    }
-    M.delete_named_context(context_name) -- ensure it's deleted if it exists
-    local saved_entry = M.save_named_context(context_name, entry)
-    assert.are.same(saved_entry, entry)
-    local retrieved_entry = M.get_named_context(context_name)
-    assert.are.same(retrieved_entry, entry)
+    local entry = { content = "sample content" }
+    context.save_named_context("test", entry)
+    local saved_entry = context.get_named_context("test")
+    assert.are.same(entry, saved_entry)
   end)
 
-  it("should delete a named context", function()
-    local context_name = "delete_test"
-    local entry = {
-      name = context_name,
-      content = "delete this content",
-      selection_type = "file_path",
-      filetype = "lua",
-      filename = "delete_test.lua",
-      ext = "lua",
-    }
-    M.delete_named_context(context_name) -- ensure it's deleted if it exists
-    local saved_entry = M.save_named_context(context_name, entry)
-    assert.are.same(saved_entry, entry)
-    M.delete_named_context(context_name)
-    local retrieved_entry = M.get_named_context(context_name)
-    assert.is_nil(retrieved_entry)
+  it("should save and name context using buffer name", function()
+    local entry = { content = "sample content" }
+    context.save_and_name_context(entry)
+    local saved_entry = context.get_named_context("buffer_name")
+    assert.are.same(entry, saved_entry)
   end)
 
-  it("should convert entry to markdown format", function()
-    local entry = {
-      filetype = "lua",
-      filename = "test.lua",
-      selection_type = "visual_selection",
-      content = "print('hello world')",
-    }
-    local md_lines = M.entry_to_md(entry)
-    assert.are.same(md_lines, {
-      "```lua",
-      "test.lua",
-      "print('hello world')",
-      "```",
-    })
+  it("should add context by filepath", function()
+    context.add_by_filepath("test_file")
+    local saved_entry = context.get_named_context("test_file")
+    assert.are.same("test_file", saved_entry.name)
+  end)
+
+  it("should add context for current buffer", function()
+    context.add_context()
+    local saved_entry = context.get_named_context("buffer_name")
+    assert.are.same("buffer_name", saved_entry.name)
+  end)
+
+  it("should delete named context", function()
+    local entry = { content = "sample content" }
+    context.save_named_context("test", entry)
+    context.delete_named_context("test")
+    local saved_entry = context.get_named_context("test")
+    assert.is_nil(saved_entry)
   end)
 
   it("should clear all named contexts", function()
-    local context1 = {
-      name = "context1",
-      content = "content1",
-      selection_type = "file_path",
-      filetype = "lua",
-      filename = "context1.lua",
-      ext = "lua",
-    }
-    local context2 = {
-      name = "context2",
-      content = "content2",
-      selection_type = "file_path",
-      filetype = "lua",
-      filename = "context2.lua",
-      ext = "lua",
-    }
-    M.delete_named_context(context1.name)
-    M.delete_named_context(context2.name)
-    M.save_named_context(context1.name, context1)
-    M.save_named_context(context2.name, context2)
-    M.clear_named_context()
-    local all_contexts = M.get_all_named_contexts()
-    assert.are.equal(#all_contexts, 0)
+    local entry = { content = "sample content" }
+    context.save_named_context("test1", entry)
+    context.save_named_context("test2", entry)
+    context.clear_named_context()
+    assert.are.same({}, context.get_all_named_contexts())
   end)
 
-  it("should get all named contexts", function()
-    local context1 = {
-      name = "context1",
-      content = "content1",
-      selection_type = "file_path",
-      filetype = "lua",
-      filename = "context1.lua",
-      ext = "lua",
-    }
-    local context2 = {
-      name = "context2",
-      content = "content2",
-      selection_type = "file_path",
-      filetype = "lua",
-      filename = "context2.lua",
-      ext = "lua",
-    }
-    M.delete_named_context(context1.name)
-    M.delete_named_context(context2.name)
-    M.name_context() -- save context1
-    M.name_context() -- save context2
-    local all_contexts = M.get_all_named_contexts()
-    assert.are.equal(#all_contexts, 2)
+  it("should add all files from quickfix list", function()
+    context.add_all_from_qflist()
+    local saved_entry1 = context.get_named_context("file1")
+    local saved_entry2 = context.get_named_context("file2")
+    assert.are.same("file1", saved_entry1.name)
+    assert.are.same("file2", saved_entry2.name)
+  end)
+
+  it("should not exceed max size", function()
+    context.set_target_size(2)
+    context.save_named_context("1", { content = "1" })
+    context.save_named_context("2", { content = "2" })
+    context.save_named_context("3", { content = "3" })
+    local all_contexts = context.get_all_named_contexts()
+    assert.are.equal(1, #all_contexts)
+    assert.is_nil(context.get_named_context("1"))
   end)
 end)

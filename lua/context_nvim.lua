@@ -8,6 +8,11 @@ local config = {
   history_for_files_only = true,
   history_pattern = "*",
   root_dir = ".",
+  cmp = {
+    enable = true,
+    manual_context_keyword = "@manual_context",
+    history_keyword = "@history_context",
+  },
 }
 
 ---@class ContextNvim
@@ -25,7 +30,6 @@ local register_history_autocmd = function(pattern, only_if_file, target_size, en
     vim.api.nvim_create_autocmd("BufWinEnter", {
       pattern = pattern or "*",
       callback = function()
-        -- vim.notify("Adding context")
         M.history_context.add_context(only_if_file)
       end,
     })
@@ -48,6 +52,13 @@ M.setup = function(args)
     M.config.history_length,
     M.config.enable_history
   )
+
+  if M.config.cmp.enable then
+    local source = require("context_nvim.cmp_source")
+    source:set_manual_keyword(M.config.cmp.manual_context_keyword)
+    source:set_history_keyword(M.config.cmp.history_keyword)
+    require("cmp").register_source("context_nvim", source)
+  end
 end
 
 M.utils = require("context_nvim.utils")

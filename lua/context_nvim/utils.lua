@@ -1,19 +1,41 @@
 local scan = require("plenary.scandir")
 local M = {}
 
+-- function M.entry_to_md(entry)
+--   vim.notify(vim.inspect(entry))
+--   local lines = {}
+--   table.insert(lines, "```" .. entry.filetype)
+--   table.insert(lines, entry.filename)
+--   if entry.selection_type == "file_path" and entry.name ~= nil then
+--     local f = io.open(entry.name, "r")
+--     if f ~= nil then
+--       local file_contents = f:read("*all")
+--       f:close()
+--       table.insert(lines, file_contents)
+--     end
+--   else
+--     table.insert(lines, entry.content)
+--   end
+--   table.insert(lines, "```")
+--   return lines
+-- end
+
 function M.entry_to_md(entry)
   local lines = {}
   table.insert(lines, "```" .. entry.filetype)
   table.insert(lines, entry.filename)
-  if entry.selection_type == "file_path" and entry.filename ~= nil then
-    local f = io.open(entry.filename, "r")
+  if entry.selection_type == "file_path" and entry.name ~= nil then
+    local f = io.open(entry.name, "r")
     if f ~= nil then
-      local file_contents = f:read("*all")
+      for line in f:lines() do
+        table.insert(lines, line)
+      end
       f:close()
-      table.insert(lines, file_contents)
     end
   else
-    table.insert(lines, entry.content)
+    for line in entry.content:gmatch("([^\\n]*)\\n?") do
+      table.insert(lines, line)
+    end
   end
   table.insert(lines, "```")
   return lines
@@ -95,5 +117,14 @@ function M.get_files_in_dir(dir, opts)
   return files
 end
 
+-- reverse ipairs
+function M.ripairs(t)
+  return function(t, i)
+    i = i - 1
+    if i ~= 0 then
+      return i, t[i]
+    end
+  end, t, #t + 1
+end
 
 return M

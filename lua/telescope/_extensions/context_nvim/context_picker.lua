@@ -9,6 +9,7 @@ local make_entry = require("telescope.make_entry")
 local logger = require("plenary.log")
 local context_nvim = require("context_nvim")
 local putils = require("telescope.previewers.utils")
+local action_set = require("telescope.actions.set")
 
 local custom_previewer = previewers.new_buffer_previewer({
   title = "Custom Previewer",
@@ -17,7 +18,6 @@ local custom_previewer = previewers.new_buffer_previewer({
   end,
 
   define_preview = function(self, entry, status)
-    vim.notify(vim.inspect(entry))
     if entry.is_file then
       -- the entry is already persisted as a file, show the
       -- file-based preview
@@ -66,12 +66,16 @@ function get_context_picker(context_type)
         previewer = custom_previewer,
         finder = make_finder(),
         sorter = conf.file_sorter(opts),
+
         attach_mappings = function(prompt_bufnr, map)
+          action_set.select:replace(function()
+            -- vim.notify("select")
+          end)
+
           map("n", "dd", function()
             local current_picker = action_state.get_current_picker(prompt_bufnr)
             local selection = action_state.get_selected_entry()
             if selection ~= nil then
-              -- context_nvim.delete_named_context(selection.display)
               ctx.delete_named_context(selection.display)
               current_picker:refresh(make_finder(), { reset_prompt = false })
             end

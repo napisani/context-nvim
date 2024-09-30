@@ -15,7 +15,6 @@ function NamedContext.new(target_size)
   end
 
   function self.save_named_context(name, entry)
-    -- vim.notify(vim.inspect(entry))
     named_contexts[name] = entry
     table.insert(names, name)
     if #names >= max_size then

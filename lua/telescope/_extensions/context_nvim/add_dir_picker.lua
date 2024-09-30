@@ -20,10 +20,10 @@ local add_dir_picker = function(opts)
     only_dirs = true,
     respect_gitignore = opts.respect_gitignore,
     on_insert = function(entry)
-      table.insert(data, vim.fs.joinpath(entry, os_sep))
+      table.insert(data, entry)
     end,
   })
-  table.insert(data, 1, vim.fs.joinpath(".", os_sep))
+  table.insert(data, 1, ".")
 
   pickers
     .new(opts, {
