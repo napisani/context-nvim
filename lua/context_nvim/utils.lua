@@ -33,7 +33,7 @@ function M.entry_to_md(entry)
       f:close()
     end
   else
-    for line in entry.content:gmatch("([^\\n]*)\\n?") do
+    for line in entry.content:gmatch("[^\r\n]+") do
       table.insert(lines, line)
     end
   end
@@ -41,15 +41,22 @@ function M.entry_to_md(entry)
   return lines
 end
 
-function M.get_current_selection()
+function M.get_current_selection(opts)
+  opts = opts or {}
   local mode = vim.fn.mode()
   mode = mode:lower():sub(-#"v")
   local content
   local selection_type
   if mode == "v" then
     selection_type = "visual_selection"
-    local start_line, start_col = unpack(vim.fn.getpos("'<"))
-    local end_line, end_col = unpack(vim.fn.getpos("'>"))
+    local start_line, _start_col = unpack(vim.fn.getpos("'<"))
+    local end_line, _end_col = unpack(vim.fn.getpos("'>"))
+    local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
+    content = table.concat(lines, "\n")
+  elseif opts.range ~= 0 and opts.range ~= nil then
+    selection_type = "visual_selection"
+    local start_line = opts.line1
+    local end_line = opts.line2
     local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
     content = table.concat(lines, "\n")
   else

@@ -64,6 +64,8 @@ local function build_context_nvim_command(subcommands)
     if subcommand == "add_current_file" then
       local path = vim.api.nvim_buf_get_name(0)
       M.manual_context.add_by_filepath(path)
+    elseif subcommand == "add_current" then
+      M.manual_context.add_current(opts)
     elseif subcommand == "add_qflist" then
       M.manual_context.add_all_from_qflist()
     elseif subcommand == "clear_history" then
@@ -120,7 +122,7 @@ M.setup = function(args)
     telescope.load_extension("context_nvim")
   end
 
-  local subcommands = { "add_current_file", "add_qflist", "clear_history", "clear_manual" }
+  local subcommands = { "add_current_file", "add_qflist", "clear_history", "clear_manual", "add_current" }
 
   if M.config.telescope.enable then
     table.insert(subcommands, "add_dir")
@@ -139,6 +141,7 @@ M.setup = function(args)
       end, subcommands)
     end,
     desc = "ContextNvim - manage files that provide context",
+    range = "%",
   })
 end
 

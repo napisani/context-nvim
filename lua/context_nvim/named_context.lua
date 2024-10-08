@@ -46,11 +46,10 @@ function NamedContext.new(target_size)
     self.save_and_name_context(entry)
   end
 
-  function self.create_context_for_current_buffer()
+  function self.create_context_for_current_buffer(opts)
     local name = Utils.get_current_buffer_name()
-    local content, selection_type = Utils.get_current_selection()
+    local content, selection_type = Utils.get_current_selection(opts)
     local filetype, filename, ext, is_file = Utils.get_current_buffer_info()
-
     local entry = {
       name = name,
       content = content,
@@ -87,12 +86,9 @@ function NamedContext.new(target_size)
     end
   end
 
-  function self.name_context()
-    local name = vim.fn.input("Enter the name of the context: ")
-    self.delete_named_context(name)
-    local entry = self.create_context_for_current_buffer()
-    entry.name = name
-    self.save_named_context(name, entry)
+  function self.add_current(opts)
+    local entry = self.create_context_for_current_buffer(opts)
+    self.save_and_name_context(entry)
   end
 
   function self.clear_named_context()
