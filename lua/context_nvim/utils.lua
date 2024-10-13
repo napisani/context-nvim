@@ -33,11 +33,17 @@ function M.entry_to_md(entry)
       f:close()
     end
   else
-    for line in entry.content:gmatch("[^\r\n]+") do
-      table.insert(lines, line)
-    end
+    lines = M.split_by_newline(entry.content)
   end
   table.insert(lines, "```")
+  return lines
+end
+
+function M.split_by_newline(s)
+  local lines = {}
+  for line in s:gmatch("[^\r\n]+") do
+    table.insert(lines, line)
+  end
   return lines
 end
 

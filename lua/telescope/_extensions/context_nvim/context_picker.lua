@@ -25,7 +25,8 @@ local custom_previewer = previewers.new_buffer_previewer({
     else
       -- the entry is not a file, show the content as preview,
       -- using the contents of the entry
-      vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, vim.split(entry.contents, "\\n"))
+      local lines = context_nvim.utils.split_by_newline(entry.content)
+      vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
     end
 
     putils.regex_highlighter(self.state.bufnr, entry.filetype)
@@ -53,6 +54,7 @@ function get_context_picker(context_type)
             is_file = r.is_file,
             filetype = r.filetype,
             filename = r.filename,
+            content = r.content,
           }
         end,
       })

@@ -107,19 +107,21 @@ M.setup = function(args)
     local status_ok, cmp = pcall(require, "cmp")
     if not status_ok then
       vim.notify("'cmp' not found")
+    else
+      local source = require("context_nvim.cmp_source")
+      source:set_manual_keyword(M.config.cmp.manual_context_keyword)
+      source:set_history_keyword(M.config.cmp.history_keyword)
+      cmp.register_source("context_nvim", source)
     end
-    local source = require("context_nvim.cmp_source")
-    source:set_manual_keyword(M.config.cmp.manual_context_keyword)
-    source:set_history_keyword(M.config.cmp.history_keyword)
-    cmp.register_source("context_nvim", source)
   end
 
   if M.config.telescope.enable then
     local status_ok, telescope = pcall(require, "telescope")
     if not status_ok then
       vim.notify("'telescope' not found")
+    else
+      telescope.load_extension("context_nvim")
     end
-    telescope.load_extension("context_nvim")
   end
 
   local subcommands = { "add_current_file", "add_qflist", "clear_history", "clear_manual", "add_current" }

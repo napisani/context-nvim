@@ -39,12 +39,12 @@ end
 ---If this is omitted, nvim-cmp will use a default keyword pattern. See |cmp-config.completion.keyword_pattern|.
 ---@return string
 function source:get_keyword_pattern()
-  return [[@]]
+  return [[@\w*]]
 end
 
 ---Return trigger characters for triggering completion (optional).
 function source:get_trigger_characters()
-  return { "." }
+  return { "@" }
 end
 
 local function build_context_completion_item(for_history)
