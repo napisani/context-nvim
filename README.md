@@ -97,4 +97,23 @@ Opens a Telescope picker to view and manage the manual context.
 Adds context for LSP line diagnostics to the manual context.
 ```
 :ContextNvim add_line_lsp_daig
+```
+
+
+## Example workflow
+1. Open a file in neovim
+2. Perform one or many of the following actions:
+    * Add the current file to the manual context
+    * Add the current visual selection to the manual context
+    * Add the current buffer to the manual context
+    * Add the quickfix list to the manual context
+    * Add a directory to the manual context
+    * Add a file to the manual context
+    * Add line diagnostics to the manual context
+3. Open `gp.nvim` or another AI prompt plugin that supports chatting with an AI model
+4. start to type `@manual_context` (or `@history_context`)
+5. Accept the cmp suggestion to insert the manual context into the chat  
+6. finish writing your prompt and send it to the AI model
+7. Profit?
+ 
 
