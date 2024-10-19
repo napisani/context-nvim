@@ -12,6 +12,8 @@ This is a plugin for neovim that helps you contextual code used for AI prompts.
 * subcommands for managing manual contexts 
 * `nvim-cmp` source for referencing history-based and manual contexts in your AI prompts 
 
+## Demo
+![demo](https://github.com/napisani/context-nvim/blob/main/demo.gif)
 
 ## Installation
 
