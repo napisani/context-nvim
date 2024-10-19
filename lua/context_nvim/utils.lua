@@ -1,25 +1,15 @@
 local scan = require("plenary.scandir")
+local Config = require("context_nvim.config")
 local M = {}
 
--- function M.entry_to_md(entry)
---   vim.notify(vim.inspect(entry))
---   local lines = {}
---   table.insert(lines, "```" .. entry.filetype)
---   table.insert(lines, entry.filename)
---   if entry.selection_type == "file_path" and entry.name ~= nil then
---     local f = io.open(entry.name, "r")
---     if f ~= nil then
---       local file_contents = f:read("*all")
---       f:close()
---       table.insert(lines, file_contents)
---     end
---   else
---     table.insert(lines, entry.content)
---   end
---   table.insert(lines, "```")
---   return lines
--- end
-
+function table_contains(tbl, element)
+  for _, value in ipairs(tbl) do
+    if value == element then
+      return true
+    end
+  end
+  return false
+end
 function M.entry_to_md(entry)
   local lines = {}
   table.insert(lines, "```" .. entry.filetype)
@@ -45,6 +35,27 @@ function M.split_by_newline(s)
     table.insert(lines, line)
   end
   return lines
+end
+
+function M.get_current_lsp_diagnostic()
+  local ignore_sources = Config.config.lsp.ignore_sources
+  local diagnostics = vim.lsp.diagnostic.get_line_diagnostics()
+  local lines = {}
+  for _, diagnostic in ipairs(diagnostics) do
+    if not table_contains(ignore_sources, diagnostic.source) then
+      table.insert(lines, "lsp diagnostic source: " .. diagnostic.source .. ": ")
+      table.insert(lines, diagnostic.message)
+      local range = diagnostic.range
+      local start_line = range.start.line
+      local end_line = range["end"].line
+      local buffer_content = vim.api.nvim_buf_get_lines(0, start_line, end_line + 1, false)
+      table.insert(lines, "related code: ")
+      for _, line in ipairs(buffer_content) do
+        table.insert(lines, line)
+      end
+    end
+  end
+  return table.concat(lines, "\n") or ""
 end
 
 function M.get_current_selection(opts)
@@ -85,7 +96,8 @@ function M.get_current_buffer_info()
   local filename = vim.fn.expand("%")
   local ext = vim.fn.expand("%:e")
   local is_file = vim.fn.filereadable(bufname) == 1
-  return filetype, filename, ext, is_file
+  local line_number = vim.api.nvim_win_get_cursor(0)[1]
+  return filetype, filename, ext, is_file, line_number
 end
 
 function M.get_file_info(filepath)

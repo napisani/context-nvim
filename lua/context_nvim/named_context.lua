@@ -26,7 +26,7 @@ function NamedContext.new(target_size)
   end
 
   function self.save_and_name_context(entry)
-    local name = Utils.get_current_buffer_name()
+    local name = entry.name
     return self.save_named_context(name, entry)
   end
 
@@ -46,10 +46,37 @@ function NamedContext.new(target_size)
     self.save_and_name_context(entry)
   end
 
+  function self.create_context_for_lsp_line_diagnostics()
+    local name = Utils.get_current_buffer_name()
+    local selection_type = "visual_selection"
+    local content = Utils.get_current_lsp_diagnostic()
+    local filetype, filename, ext, is_file, line_num = Utils.get_current_buffer_info()
+    if content == "" then
+      return nil
+    end
+    local entry = {
+      name = "lsp,line:" .. tostring(line_num) .. ":" .. name,
+      content = content,
+      selection_type = selection_type,
+      filetype = filetype,
+      filename = filename,
+      ext = ext,
+      is_file = is_file,
+    }
+    return entry
+  end
+
+  function self.add_context_for_lsp_line_diagnostics()
+    local entry = self.create_context_for_lsp_line_diagnostics()
+    if entry ~= nil then
+      self.save_and_name_context(entry)
+    end
+  end
+
   function self.create_context_for_current_buffer(opts)
     local name = Utils.get_current_buffer_name()
     local content, selection_type = Utils.get_current_selection(opts)
-    local filetype, filename, ext, is_file = Utils.get_current_buffer_info()
+    local filetype, filename, ext, is_file, _line_num = Utils.get_current_buffer_info()
     local entry = {
       name = name,
       content = content,

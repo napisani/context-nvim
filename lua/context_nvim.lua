@@ -1,32 +1,12 @@
 local NamedContext = require("context_nvim.named_context")
 local logger = require("plenary.log")
-
----@class Config
----@field opt string Your config option
-local config = {
-  enable_history = true,
-  history_length = 10,
-  history_for_files_only = true,
-  history_pattern = "*",
-  root_dir = ".",
-  cmp = {
-    enable = true,
-    manual_context_keyword = "@manual_context",
-    history_keyword = "@history_context",
-  },
-
-  telescope = {
-    enable = true,
-  },
-  logger = {
-    level = "error",
-  },
-}
+local Config = require("context_nvim.config")
 
 ---@class ContextNvim
 local M = {
   history_context = NamedContext.new(),
   manual_context = NamedContext.new(),
+  config = Config.config,
 }
 
 local init_history = function(target_size)
@@ -43,9 +23,6 @@ local register_history_autocmd = function(pattern, only_if_file, target_size, en
     })
   end
 end
-
----@type Config
-M.config = config
 
 local function build_context_nvim_command(subcommands)
   local context_nvim_command = function(opts)
@@ -80,6 +57,8 @@ local function build_context_nvim_command(subcommands)
       require("telescope").extensions.context_nvim.find_context_history()
     elseif subcommand == "find_context_manual" then
       require("telescope").extensions.context_nvim.find_context_manual()
+    elseif subcommand == "add_line_lsp_daig" then
+      M.manual_context.add_context_for_lsp_line_diagnostics()
     else
       print("Unknown subcommand: " .. subcommand)
       print("Subcommands: " .. table.concat(subcommands, ", "))
@@ -89,7 +68,8 @@ local function build_context_nvim_command(subcommands)
 end
 
 M.setup = function(args)
-  M.config = vim.tbl_deep_extend("force", M.config, args or {})
+  Config.setup(args)
+  M.config = Config.config
   M.logger = logger.new({
     plugin = "context_nvim",
     level = M.config.logger.level,
@@ -124,7 +104,8 @@ M.setup = function(args)
     end
   end
 
-  local subcommands = { "add_current_file", "add_qflist", "clear_history", "clear_manual", "add_current" }
+  local subcommands =
+    { "add_current_file", "add_qflist", "clear_history", "clear_manual", "add_current", "add_line_lsp_daig" }
 
   if M.config.telescope.enable then
     table.insert(subcommands, "add_dir")
