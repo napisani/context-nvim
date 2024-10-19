@@ -26,6 +26,10 @@ local config = {
   },
 }
 
+function M.bogus_function()
+  print("bogus")
+end
+
 function M.setup(args)
   M.config = vim.tbl_deep_extend("force", config, args or {})
 end

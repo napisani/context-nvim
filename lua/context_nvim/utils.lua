@@ -23,7 +23,7 @@ function M.entry_to_md(entry)
       f:close()
     end
   else
-    lines = M.split_by_newline(entry.content)
+    lines = M.split_by_newline(entry.content or "")
   end
   table.insert(lines, "```")
   return lines

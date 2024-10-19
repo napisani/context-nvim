@@ -15,7 +15,7 @@ local custom_previewer = previewers.new_buffer_previewer({
   end,
 
   define_preview = function(self, entry, status)
-    if entry.selection_type == 'file_path' and entry.is_file then
+    if entry.selection_type == "file_path" and entry.is_file then
       -- the entry is already persisted as a file, show the
       -- file-based preview
       conf.buffer_previewer_maker(entry.filename, self.state.bufnr, {
@@ -53,6 +53,7 @@ function get_context_picker(context_type)
             ordinal = r.name,
             is_file = r.is_file,
             filetype = r.filetype,
+            selection_type = r.selection_type,
             filename = r.filename,
             content = r.content,
           }

@@ -33,7 +33,27 @@ Using lazy.nvim:
 
 ```lua
 require("context_nvim").setup({ 
+  enable_history = true, -- whether to enable history context by tracking opened files/buffers
+  history_length = 10, -- how many history items to track
+  history_for_files_only = true, -- only use history for files, any non-file buffers will be ignored
+  history_pattern = "*", -- history pattern to match files/buffers that will be tracked
+  root_dir = ".", -- root directory of the project, used for finding files and constructing paths
+  cmp = {
+    enable = true, -- whether to enable the nvim-cmp source for referencing contexts
+    manual_context_keyword = "@manual_context", -- keyword to use for manual context
+    history_keyword = "@history_context", -- keyword to use for history context
+  },
+  telescope = {
+    enable = true, -- whether to enable the telescope picker
+  },
 
+  logger = {
+    level = "error", -- log level for the plenary logger 
+  },
+
+  lsp = {
+    ignore_sources = {}, -- lsp sources to ignore when adding line diagnostics to the manual context
+  },
 })
 ```
 
