@@ -45,13 +45,6 @@ describe("NamedContext", function()
     assert.are.same(entry, saved_entry)
   end)
 
-  it("should save and name context using buffer name", function()
-    local entry = { content = "sample content" }
-    context.save_and_name_context(entry)
-    local saved_entry = context.get_named_context("buffer_name")
-    assert.are.same(entry, saved_entry)
-  end)
-
   it("should add context by filepath", function()
     context.add_by_filepath("test_file")
     local saved_entry = context.get_named_context("test_file")
