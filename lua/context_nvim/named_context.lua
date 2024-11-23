@@ -32,6 +32,9 @@ function NamedContext.new(target_size)
 
   function self.add_by_filepath(filename)
     local entry = self.create_context_for_filepath(filename)
+    if entry == nil then
+      return
+    end
     entry.name = filename
     self.save_named_context(filename, entry)
   end
@@ -91,6 +94,9 @@ function NamedContext.new(target_size)
 
   function self.create_context_for_filepath(filepath)
     local filetype, filename, ext, is_file = Utils.get_file_info(filepath)
+    if filename == "" and filetype == "" and is_file == false then
+      return nil
+    end
     local entry = {
       name = filename,
       content = nil,

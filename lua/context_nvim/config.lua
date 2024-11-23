@@ -24,6 +24,8 @@ local config = {
   lsp = {
     ignore_sources = {},
   },
+
+  prompts = {},
 }
 
 function M.bogus_function()

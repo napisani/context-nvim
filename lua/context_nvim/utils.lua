@@ -91,29 +91,32 @@ end
 
 function M.get_current_buffer_info()
   local buf = vim.api.nvim_get_current_buf()
-  local bufname = vim.api.nvim_buf_get_name(buf)
-  local filetype = vim.api.nvim_buf_get_option(buf, "filetype")
-  local filename = vim.fn.expand("%")
-  local ext = vim.fn.expand("%:e")
+  local bufname = vim.api.nvim_buf_get_name(buf) or ""
+  local filetype = vim.api.nvim_buf_get_option(buf, "filetype") or ""
+  local filename = vim.fn.expand("%") or ""
+  local ext = vim.fn.expand("%:e") or ""
   local is_file = vim.fn.filereadable(bufname) == 1
-  local line_number = vim.api.nvim_win_get_cursor(0)[1]
+  local line_number = (vim.api.nvim_win_get_cursor(0) or {})[1] or 0
   return filetype, filename, ext, is_file, line_number
 end
 
 function M.get_file_info(filepath)
-  local filetype = vim.filetype.match({ filename = filepath })
-  local filename = vim.fn.fnamemodify(filepath, ":t")
-  local ext = vim.fn.fnamemodify(filepath, ":e")
+  if not filepath or filepath == "" then
+    return "", "", "", false
+  end
+  local filetype = vim.filetype.match({ filename = filepath }) or ""
+  local filename = vim.fn.fnamemodify(filepath, ":t") or ""
+  local ext = vim.fn.fnamemodify(filepath, ":e") or ""
   local is_file = vim.fn.filereadable(filepath) == 1
   return filetype, filename, ext, is_file
 end
 
 function M.get_file_paths_from_qflist()
-  local qf_list = vim.fn.getqflist()
+  local qf_list = vim.fn.getqflist() or {}
   local file_paths = {}
 
   for _, entry in ipairs(qf_list) do
-    local bufnr = entry.bufnr
+    local bufnr = entry.bufnr or 0
     if bufnr > 0 then
       local file_path = vim.api.nvim_buf_get_name(bufnr)
       if file_path and file_path ~= "" and not file_paths[file_path] then

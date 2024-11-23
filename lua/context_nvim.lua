@@ -57,6 +57,8 @@ local function build_context_nvim_command(subcommands)
       require("telescope").extensions.context_nvim.find_context_history()
     elseif subcommand == "find_context_manual" then
       require("telescope").extensions.context_nvim.find_context_manual()
+    elseif subcommand == "insert_prompt" then
+      require("telescope").extensions.context_nvim.prompts()
     elseif subcommand == "add_line_lsp_daig" then
       M.manual_context.add_context_for_lsp_line_diagnostics()
     else
@@ -112,6 +114,7 @@ M.setup = function(args)
     table.insert(subcommands, "add_file")
     table.insert(subcommands, "find_context_history")
     table.insert(subcommands, "find_context_manual")
+    table.insert(subcommands, "insert_prompt")
   end
 
   vim.api.nvim_create_user_command("ContextNvim", build_context_nvim_command(subcommands), {
