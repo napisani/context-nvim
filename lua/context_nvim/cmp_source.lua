@@ -1,4 +1,5 @@
 local context_nvim = require("context_nvim")
+local Config = require("context_nvim.config")
 local utils = require("context_nvim.utils")
 local cmp = require("cmp")
 
@@ -6,6 +7,7 @@ local max_preview_len = 10
 local source = {
   manual_keyword = "@manual_context",
   history_keyword = "@history_context",
+  prompt_keyword = "@prompt",
 }
 
 function source:set_manual_keyword(keyword)
@@ -14,6 +16,10 @@ end
 
 function source:set_history_keyword(keyword)
   source.history_keyword = keyword
+end
+
+function source:set_prompt_keyword(keyword)
+  source.prompt_keyword = keyword
 end
 
 ---Return whether this source is available in the current context or not (optional).
@@ -25,7 +31,7 @@ end
 ---Return the debug name of this source (optional).
 ---@return string
 function source:get_debug_name()
-  return "debug name"
+  return "context_nvim"
 end
 
 ---Return LSP's PositionEncodingKind.
@@ -76,6 +82,26 @@ local function build_context_completion_item(for_history)
   }
 end
 
+local function build_prompt_completion_items()
+  local prompts = Config.config.prompts
+  if #prompts == 0 then
+    return nil
+  end
+
+  local prompt_items = {}
+  for _, prompt in ipairs(prompts) do
+    local prompt_item = {
+      label = source.prompt_keyword .. prompt.name,
+      word = "",
+      index = _,
+      documentation = prompt.prompt,
+      kind = cmp.lsp.CompletionItemKind.Text,
+    }
+    table.insert(prompt_items, prompt_item)
+  end
+  return prompt_items
+end
+
 ---Invoke completion (required).
 ---@param params cmp.SourceCompletionApiParams
 ---@param callback fun(response: lsp.CompletionResponse|nil)
@@ -90,6 +116,14 @@ function source:complete(_params, callback)
   if history_context_completion_item then
     table.insert(completion_items, history_context_completion_item)
   end
+
+  local prompt_completion_items = build_prompt_completion_items()
+  if prompt_completion_items then
+    for _, prompt_item in ipairs(prompt_completion_items) do
+      table.insert(completion_items, prompt_item)
+    end
+  end
+
   callback(completion_items)
 end
 
@@ -111,6 +145,19 @@ function source:execute(completion_item, callback)
     context_items = context_nvim.manual_context.get_all_named_contexts()
   elseif completion_item.label == source.history_keyword then
     context_items = context_nvim.history_context.get_all_named_contexts()
+  end
+
+  -- it wasn't a history or manual context, so it must be a prompt
+  if context_items == nil then
+    for _, prompt in ipairs(Config.config.prompts) do
+      if completion_item.label == source.prompt_keyword .. prompt.name then
+        context_items = prompt.context
+        -- insert the prompt without converting it to markdown, then return
+        vim.api.nvim_put({ prompt.prompt }, "", false, true)
+        callback(completion_item)
+        return
+      end
+    end
   end
 
   if context_items then

@@ -93,6 +93,7 @@ M.setup = function(args)
       local source = require("context_nvim.cmp_source")
       source:set_manual_keyword(M.config.cmp.manual_context_keyword)
       source:set_history_keyword(M.config.cmp.history_keyword)
+      source:set_prompt_keyword(M.config.cmp.prompt_keyword)
       cmp.register_source("context_nvim", source)
     end
   end

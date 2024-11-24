@@ -12,6 +12,7 @@ local config = {
     enable = true,
     manual_context_keyword = "@manual_context",
     history_keyword = "@history_context",
+    prompt_keyword = "@prompt",
   },
 
   telescope = {
@@ -27,10 +28,6 @@ local config = {
 
   prompts = {},
 }
-
-function M.bogus_function()
-  print("bogus")
-end
 
 function M.setup(args)
   M.config = vim.tbl_deep_extend("force", config, args or {})
