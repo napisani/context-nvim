@@ -42,9 +42,14 @@ require("context_nvim").setup({
   root_dir = ".", -- root directory of the project, used for finding files and constructing paths
   cmp = {
     enable = true, -- whether to enable the nvim-cmp source for referencing contexts
+
+    register_cmp_avante = true, -- whether to include the cmp source for avante input buffers. 
+                                -- They need to be registered using an autocmd, so this is a separate config option
     manual_context_keyword = "@manual_context", -- keyword to use for manual context
     history_keyword = "@history_context", -- keyword to use for history context
+    prompt_keyword = "@prompt", -- keyword to use for prompt context
   },
+
   telescope = {
     enable = true, -- whether to enable the telescope picker
   },
@@ -56,6 +61,13 @@ require("context_nvim").setup({
   lsp = {
     ignore_sources = {}, -- lsp sources to ignore when adding line diagnostics to the manual context
   },
+  prompts = {
+        { 
+            name = 'unit tests', -- the name of the prompt (required)
+            prompt = 'Generate a suite of unit tests using Jest, respond with only code.', -- the prompt text (required)
+            cmp = 'jest' -- an alternate name for the cmp completion source (optional) defaults to 'name'
+        },
+    }
 })
 ```
 
@@ -121,6 +133,12 @@ Adds context for LSP line diagnostics to the manual context.
 :ContextNvim add_line_lsp_daig
 ```
 
+## insert_prompt     
+Brings up a telescope picker, when an entry is selected. The prompt will be inserted into the buffer. 
+```
+:ContextNvim insert_prompt 
+```
+
 
 ## Example workflow
 1. Open a file in neovim
@@ -135,7 +153,8 @@ Adds context for LSP line diagnostics to the manual context.
 3. Open `gp.nvim` or another AI prompt plugin that supports chatting with an AI model
 4. start to type `@manual_context` (or `@history_context`)
 5. Accept the cmp suggestion to insert the manual context into the chat  
-6. finish writing your prompt and send it to the AI model
-7. Profit?
+6. start typing the `@prompt` and select a prompt you want to insert 
+7. submit the AI prompt
+8. Profit?
  
 
