@@ -10,6 +10,7 @@ local config = {
   root_dir = ".",
   cmp = {
     enable = true,
+    register_cmp_avante = true,
     manual_context_keyword = "@manual_context",
     history_keyword = "@history_context",
     prompt_keyword = "@prompt",

@@ -95,6 +95,36 @@ M.setup = function(args)
       source:set_history_keyword(M.config.cmp.history_keyword)
       source:set_prompt_keyword(M.config.cmp.prompt_keyword)
       cmp.register_source("context_nvim", source)
+
+      if M.config.cmp.register_cmp_avante then
+        vim.api.nvim_create_autocmd("InsertEnter", {
+          group = vim.api.nvim_create_augroup("AddCmpSourceLast", { clear = true }),
+          callback = function()
+            if vim.bo.filetype ~= "AvanteInput" then
+              return
+            end
+            vim.schedule(function()
+              local config = cmp.get_config()
+              -- if the table already has a sources key, then we just add the source to the table
+              if config == nil or config.sources == nil then
+                return
+              end
+
+              local filtered = vim.tbl_filter(function(item)
+                return type(item) == "table" and item.name == "context_nvim"
+              end, config.sources)
+
+              if #filtered > 0 then
+                return
+              end
+              table.insert(config.sources, { name = "context_nvim" })
+              cmp.setup.buffer(config)
+            end)
+          end,
+          desc = "Add context_nvim cmp source on InsertEnter",
+          pattern = "*",
+        })
+      end
     end
   end
 
