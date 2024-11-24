@@ -91,7 +91,7 @@ local function build_prompt_completion_items()
   local prompt_items = {}
   for _, prompt in ipairs(prompts) do
     local prompt_item = {
-      label = source.prompt_keyword .. prompt.name,
+      label = source.prompt_keyword .. (prompt.cmp or prompt.name),
       word = "",
       index = _,
       documentation = prompt.prompt,
@@ -150,7 +150,7 @@ function source:execute(completion_item, callback)
   -- it wasn't a history or manual context, so it must be a prompt
   if context_items == nil then
     for _, prompt in ipairs(Config.config.prompts) do
-      if completion_item.label == source.prompt_keyword .. prompt.name then
+      if completion_item.label == source.prompt_keyword .. (prompt.cmp or prompt.name) then
         context_items = prompt.context
         -- insert the prompt without converting it to markdown, then return
         vim.api.nvim_put({ prompt.prompt }, "", false, true)
