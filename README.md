@@ -140,7 +140,7 @@ Brings up a telescope picker, when an entry is selected. The prompt will be inse
 ```
 
 
-## Example workflow
+## Example workflow (with `cmp`)
 1. Open a file in neovim
 2. Perform one or many of the following actions:
     * Add the current file to the manual context

@@ -169,7 +169,7 @@ function source:execute(completion_item, callback)
     end
   end
 
-  vim.api.nvim_put(md_lines, "l", true, true)
+  vim.api.nvim_put(md_lines, "l", false, true)
   callback(completion_item)
 end
 

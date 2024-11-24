@@ -5,8 +5,9 @@ local action_state = require("telescope.actions.state")
 local previewers = require("telescope.previewers")
 local make_entry = require("telescope.make_entry")
 local context_nvim = require("context_nvim")
+local utils = require("context_nvim.utils")
 local putils = require("telescope.previewers.utils")
-local action_set = require("telescope.actions.set")
+local actions = require("telescope.actions")
 
 local custom_previewer = previewers.new_buffer_previewer({
   title = "Context Preview",
@@ -32,7 +33,6 @@ local custom_previewer = previewers.new_buffer_previewer({
     putils.regex_highlighter(self.state.bufnr, entry.filetype)
   end,
 })
-
 function get_context_picker(context_type)
   if context_nvim[context_type] == nil then
     return nil
@@ -68,9 +68,23 @@ function get_context_picker(context_type)
         sorter = conf.file_sorter(opts),
 
         attach_mappings = function(prompt_bufnr, map)
-          action_set.select:replace(function()
+          local select_action = function()
             context_nvim.logger.debug("selecting")
-          end)
+            actions.close(prompt_bufnr)
+            local selection = action_state.get_selected_entry()
+            local item = ctx.get_named_context(selection.display)
+
+            local md_lines = {}
+            local lines = utils.entry_to_md(item)
+            for _, line in ipairs(lines) do
+              table.insert(md_lines, line)
+            end
+
+            vim.api.nvim_put(md_lines, "l", false, true)
+          end
+
+          map("i", "<CR>", select_action)
+          map("n", "<CR>", select_action)
 
           map("n", "dd", function()
             context_nvim.logger.debug("deleting")
