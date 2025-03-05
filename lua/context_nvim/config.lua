@@ -20,7 +20,6 @@ local config = {
 
   -- Blink configuration
   blink = {
-    enable = false,
     manual_context_keyword = "@manual_context",
     history_keyword = "@history_context",
     prompt_keyword = "@prompt",

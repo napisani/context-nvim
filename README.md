@@ -50,6 +50,14 @@ require("context_nvim").setup({
     prompt_keyword = "@prompt", -- keyword to use for prompt context
   },
 
+  blink = {
+    manual_context_keyword = "@manual_context", -- keyword to use for manual context
+    history_keyword = "@history_context", -- keyword to use for history context
+    prompt_keyword = "@prompt", -- keyword to use for prompt context
+  },
+
+
+
   telescope = {
     enable = true, -- whether to enable the telescope picker
   },
@@ -151,6 +159,40 @@ Brings up a telescope picker, when an entry is selected. The prompt will be inse
 :ContextNvim insert_prompt 
 ```
 
+
+## Blink Configuration
+
+To use context-nvim with blink.nvim, you need to:
+
+1. Enable it in the context-nvim config:
+```lua
+require("context_nvim").setup({
+  ...
+  blink = {
+    manual_context_keyword = "@manual_context",
+    history_keyword = "@history_context",
+    prompt_keyword = "@prompt",
+  }
+  ...
+})
+```
+
+2. Configure blink.nvim to use the context-nvim source:
+```lua
+{
+  sources = {
+    default = { ..., "context_nvim" }, -- to add the context_nvim source to all filetypes
+    per_filetype = { codecompanion = { "context_nvim" } }, -- to add the context_nvim source to a specific filetype
+    providers = {
+      context_nvim = {
+        enabled = true,
+        name = "context_nvim",
+        module = "context_nvim.blink_source",
+      },
+    },
+  }
+}
+```
 
 ## Example workflow (with `cmp`)
 1. Open a file in neovim
