@@ -61,6 +61,30 @@ local function build_context_nvim_command(subcommands)
       require("telescope").extensions.context_nvim.prompts()
     elseif subcommand == "add_line_lsp_daig" then
       M.manual_context.add_context_for_lsp_line_diagnostics()
+    elseif subcommand == "paste_manual" then
+      local md_lines = {}
+      local context_items = M.manual_context.get_all_named_contexts()
+      if context_items then
+        for _, context in ipairs(context_items) do
+          local lines = M.utils.entry_to_md(context)
+          for _, line in ipairs(lines) do
+            table.insert(md_lines, line)
+          end
+        end
+      end
+      vim.api.nvim_put(md_lines, "l", false, true)
+    elseif subcommand == "paste_history" then
+      local md_lines = {}
+      local context_items = M.history_context.get_all_named_contexts()
+      if context_items then
+        for _, context in ipairs(context_items) do
+          local lines = M.utils.entry_to_md(context)
+          for _, line in ipairs(lines) do
+            table.insert(md_lines, line)
+          end
+        end
+      end
+      vim.api.nvim_put(md_lines, "l", false, true)
     else
       print("Unknown subcommand: " .. subcommand)
       print("Subcommands: " .. table.concat(subcommands, ", "))
@@ -138,7 +162,7 @@ M.setup = function(args)
   end
 
   local subcommands =
-    { "add_current_file", "add_qflist", "clear_history", "clear_manual", "add_current", "add_line_lsp_daig" }
+    { "add_current_file", "add_qflist", "clear_history", "clear_manual", "add_current", "add_line_lsp_daig", "paste_manual", "paste_history" }
 
   if M.config.telescope.enable then
     table.insert(subcommands, "add_dir")

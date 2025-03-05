@@ -23,12 +23,14 @@ function M.entry_to_md(entry)
       f:close()
     end
   else
-    lines = M.split_by_newline(entry.content or "")
+    local new_lines = M.split_by_newline(entry.content or "")
+    for _, line in ipairs(new_lines) do
+      table.insert(lines, line)
+    end
   end
   table.insert(lines, "```")
   return lines
 end
-
 function M.split_by_newline(s)
   local lines = {}
   for line in s:gmatch("[^\r\n]+") do

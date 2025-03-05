@@ -8,9 +8,19 @@ local config = {
   history_for_files_only = true,
   history_pattern = "*",
   root_dir = ".",
+  
+  -- CMP configuration
   cmp = {
     enable = true,
     register_cmp_avante = true,
+    manual_context_keyword = "@manual_context",
+    history_keyword = "@history_context", 
+    prompt_keyword = "@prompt",
+  },
+
+  -- Blink configuration
+  blink = {
+    enable = false,
     manual_context_keyword = "@manual_context",
     history_keyword = "@history_context",
     prompt_keyword = "@prompt",

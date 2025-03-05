@@ -133,6 +133,18 @@ Adds context for LSP line diagnostics to the manual context.
 :ContextNvim add_line_lsp_daig
 ```
 
+## paste_manual
+Pastes all manual contexts at the current cursor position.
+```
+:ContextNvim paste_manual
+```
+
+## paste_history
+Pastes all history contexts at the current cursor position.
+```
+:ContextNvim paste_history
+```
+
 ## insert_prompt     
 Brings up a telescope picker, when an entry is selected. The prompt will be inserted into the buffer. 
 ```
