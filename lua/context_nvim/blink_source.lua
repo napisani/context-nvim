@@ -33,6 +33,10 @@ function source:get_completions(ctx, callback)
       character = ctx.bounds.start_col + ctx.bounds.length,
     },
   }
+  -- edit_range = {
+  --   start = { line = 0, character = 0 },
+  --   ["end"] = { line = 0, character = 0 },
+  -- }
 
   -- Add manual context completion
   local manual_contexts = context_nvim.manual_context.get_all_named_contexts()
@@ -50,6 +54,8 @@ function source:get_completions(ctx, callback)
       table.insert(preview, string.format("and %d more...", remaining))
     end
 
+    local new_text = "manual context"
+
     table.insert(items, {
       label = Config.config.blink.manual_context_keyword,
       kind = require("blink.cmp.types").CompletionItemKind.Text,
@@ -58,7 +64,7 @@ function source:get_completions(ctx, callback)
         value = table.concat(preview, "\n"),
       },
       textEdit = {
-        newText = "",
+        newText = new_text,
         range = edit_range,
       },
     })
@@ -75,6 +81,7 @@ function source:get_completions(ctx, callback)
       table.insert(preview, context.name)
     end
 
+    local new_text = "history context"
     local remaining = #history_contexts - max_preview_len
     if remaining > 0 then
       table.insert(preview, string.format("and %d more...", remaining))
@@ -88,7 +95,7 @@ function source:get_completions(ctx, callback)
         value = table.concat(preview, "\n"),
       },
       textEdit = {
-        newText = "",
+        newText = new_text,
         range = edit_range,
       },
     })
@@ -104,7 +111,7 @@ function source:get_completions(ctx, callback)
         value = prompt.prompt,
       },
       textEdit = {
-        newText = prompt.prompt,
+        newText = prompt.prompt or "",
         range = edit_range,
       },
     })
